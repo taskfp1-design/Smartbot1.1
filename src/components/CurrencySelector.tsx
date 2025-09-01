@@ -83,7 +83,6 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                 {selectedPairData.codes[1]}
               </span>
             </div>
-            </span>
             {hasRecommendation && recommendedPair === selectedPair && (
               <Flame className="w-3 h-3 text-orange-500 animate-pulse" />
             )}

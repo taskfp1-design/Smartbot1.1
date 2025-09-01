@@ -24,7 +24,6 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
   const [isTyping, setIsTyping] = useState(false);
   const [isSignalBlinking, setIsSignalBlinking] = useState(false);
 
-  // Список торговых пар для сигналов
   const tradingPairs = [
     'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'USD/CHF',
     'NZD/USD', 'EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'AUD/JPY', 'CAD/JPY',
@@ -32,7 +31,6 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
     'USD/CHF-OTC', 'NZD/USD-OTC', 'EUR/GBP-OTC'
   ];
 
-  // Проверка времени сигнала (11:00, 16:00, 21:00 по Москве)
   const isSignalTime = () => {
     const now = new Date();
     const moscowOffset = 3; // UTC+3 для Москвы
@@ -43,17 +41,14 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
     const currentMinute = moscowTime.getUTCMinutes();
     const currentSecond = moscowTime.getUTCSeconds();
     
-    // Проверяем, если текущее время соответствует времени сигнала (в пределах 1 минуты)
     return signalTimes.includes(currentHour) && currentMinute === 0 && currentSecond <= 10;
   };
 
-  // Генерация случайного сигнала
   const generateRandomSignal = () => {
     const randomPair = tradingPairs[Math.floor(Math.random() * tradingPairs.length)];
     const randomDirection = Math.random() > 0.5 ? 'HIGHER' : 'LOWER';
     const randomExpiration = ['1 min', '2 min', '3 min', '4 min', '5 min'][Math.floor(Math.random() * 5)] as '1 min' | '2 min' | '3 min' | '4 min' | '5 min';
     
-    // Генерируем случайную цену входа для реалистичности
     const basePrice = 1.0850;
     const variation = (Math.random() - 0.5) * 0.01;
     const entryPrice = basePrice + variation;
@@ -66,57 +61,45 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
       entryPrice: entryPrice
     });
     
-    // Запускаем мерцание на 1 минуту
     setIsSignalBlinking(true);
     
-    // Через 1 минуту убираем сигнал и мерцание
     setTimeout(() => {
       setIsSignalBlinking(false);
-      setCurrentSignal(null); // Убираем сигнал, возвращаем "Ожидание сигнала"
-    }, 60000); // 60 секунд
+      setCurrentSignal(null);
+    }, 60000);
     
-    // Запускаем мерцание на 3 секунды
-    
-    // Обновляем текст стратегии при генерации экспресс сигнала
     const randomStrategy = strategies[randomPair as keyof typeof strategies] || strategies['EUR/USD'];
     setCurrentStrategyText(randomStrategy.strategy);
     
-    // Запускаем эффект печатающей машинки
     startTypewriterEffect(randomStrategy.strategy);
   };
 
-  // Эффект для генерации сигналов по расписанию (11:00, 16:00, 21:00 МСК)
   useEffect(() => {
-    // Проверяем каждую секунду, не пора ли генерировать сигнал
     const interval = setInterval(() => {
       if (isSignalTime()) {
         generateRandomSignal();
       }
-    }, 1000); // Проверяем каждую секунду
+    }, 1000);
 
     return () => {
       clearInterval(interval);
     };
   }, []);
 
-  // Эффект для генерации сигнала при окончании таймера (когда timeLeft становится <= 1)
   useEffect(() => {
     if (timeLeft <= 1 && timeLeft > 0) {
-      // Генерируем сигнал когда таймер заканчивается
       setTimeout(() => {
         generateRandomSignal();
-      }, 1000); // Небольшая задержка для синхронизации с "Точка входа"
+      }, 1000);
     }
   }, [timeLeft]);
 
-  // Эффект для генерации сигнала при нажатии кнопки "Экспресс сигнал"
   useEffect(() => {
     if (expressSignalTrigger > 0) {
       generateRandomSignal();
     }
   }, [expressSignalTrigger]);
 
-  // Инициализация текста стратегии при загрузке компонента
   useEffect(() => {
     const currentStrategy = strategies[currencyPair as keyof typeof strategies] || strategies['EUR/USD'];
     if (!currentStrategyText) {
@@ -125,13 +108,12 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
     }
   }, [currencyPair, currentStrategyText]);
   
-  // Функция для эффекта печатающей машинки
   const startTypewriterEffect = (text: string) => {
     setDisplayedStrategyText('');
     setIsTyping(true);
     
     let currentIndex = 0;
-    const typingSpeed = 30; // Скорость печати в миллисекундах
+    const typingSpeed = 30;
     
     const typeInterval = setInterval(() => {
       if (currentIndex < text.length) {
@@ -143,19 +125,15 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
       }
     }, typingSpeed);
     
-    // Очищаем интервал при размонтировании компонента
     return () => clearInterval(typeInterval);
   };
   
-  // Вычисляем прогресс (от 0 до 100%)
   const progress = maxTime > 0 ? Math.max(0, Math.min(100, ((maxTime - timeLeft) / maxTime) * 100)) : 0;
   
-  // Определяем цвет прогресс-бара в зависимости от прогресса
   const getProgressColor = () => {
     return 'from-blue-500 to-white';
   };
 
-  // Определяем статус анализа
   const getAnalysisStatus = () => {
     if (progress < 25) return 'Initialization...';
     if (progress < 50) return 'Data collection...';
@@ -164,7 +142,6 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
     return 'Ready to trade!';
   };
 
-  // Определяем цвет фона блока в зависимости от сигнала
   const getBlockBackgroundColor = () => {
     if (!currentSignal || !isSignalBlinking) return 'bg-gray-800';
     
@@ -175,7 +152,6 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
     }
   };
 
-  // Стратегии для разных валютных пар
   const strategies = {
     'EUR/USD': {
       trend: 'Восходящий',
@@ -454,7 +430,7 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
         <div className={`p-4 rounded border-2 mb-3 min-h-[80px] flex flex-col justify-center transition-all duration-300 ${
           isSignalBlinking ? 'animate-pulse' : ''
         } ${
-          currentSignal.direction === 'ВЫШЕ' 
+          currentSignal.direction === 'HIGHER' 
             ? isSignalBlinking 
               ? 'bg-gradient-to-br from-green-400/90 via-emerald-400/90 to-lime-400/90 backdrop-blur-sm border-green-200 shadow-2xl shadow-green-400/90 brightness-150' 
               : 'bg-gradient-to-br from-green-600/30 via-emerald-600/30 to-lime-600/30 backdrop-blur-sm border-green-400/60 shadow-lg shadow-green-500/40'
@@ -463,7 +439,6 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
               : 'bg-gradient-to-br from-red-600/30 via-pink-600/30 to-rose-600/30 backdrop-blur-sm border-red-400/60 shadow-lg shadow-red-500/40'
         }`}>
           <div className="space-y-3">
-            {/* Заголовок сигнала */}
             <div className="text-center">
               <div className={`text-xl font-black uppercase tracking-wider ${
                 isSignalBlinking ? 'text-white' : 'text-white'
@@ -472,10 +447,9 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
               </div>
             </div>
             
-            {/* Основная информация */}
             <div className="flex items-center justify-center">
               <div className="flex items-center gap-2">
-                {currentSignal.direction === 'ВЫШЕ' ? (
+                {currentSignal.direction === 'HIGHER' ? (
                   <ArrowUp className={`w-8 h-8 ${isSignalBlinking ? 'text-white' : 'text-green-300'}`} />
                 ) : (
                   <ArrowDown className={`w-8 h-8 ${isSignalBlinking ? 'text-white' : 'text-red-300'}`} />
@@ -502,7 +476,6 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
               </div>
             </div>
             
-            {/* Время экспирации - крупно */}
             <div className="text-center">
               <div className={`text-lg font-semibold ${isSignalBlinking ? 'text-gray-100' : 'text-gray-200'}`}>
                 Expiration time:
@@ -516,7 +489,6 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
               </div>
             </div>
             
-            {/* Дополнительная информация */}
             <div className="flex items-center justify-between text-sm">
               <div className={`${isSignalBlinking ? 'text-gray-100' : 'text-gray-200'}`}>
                 <span className="font-semibold">Entry price:</span>
@@ -533,7 +505,6 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
               </div>
             </div>
             
-            {/* Инструкция */}
             <div className={`text-center p-3 rounded-lg ${
               currentSignal.direction === 'HIGHER'
                 ? 'bg-green-900/40 border-2 border-green-400/60'
@@ -553,20 +524,15 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
       ) : (
         <div className="p-4 bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded border border-purple-400/50 text-center mb-3 min-h-[80px] flex flex-col justify-center shadow-inner">
           <div className="relative w-full h-full flex flex-col justify-center">
-            {/* Progress Bar Background */}
             <div className="w-full bg-gradient-to-r from-gray-800/60 via-gray-700/60 to-gray-800/60 backdrop-blur-sm rounded-full h-8 overflow-hidden relative mb-2 border border-purple-500/30">
-              {/* Progress Fill */}
               <div 
                 className="h-full bg-gradient-to-r from-purple-500 via-blue-500 via-cyan-400 to-green-400 transition-all duration-1000 ease-out relative shadow-lg"
                 style={{ width: `${progress}%` }}
               >
-                {/* Animated shine effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse"></div>
-                {/* Moving light effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-300/30 to-transparent animate-ping"></div>
               </div>
               
-              {/* Percentage Text Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-white font-bold text-sm font-mono drop-shadow-lg text-shadow-lg">
                   {Math.round(progress)}%
@@ -574,7 +540,6 @@ const StrategyAnalysis: React.FC<StrategyAnalysisProps> = ({ currencyPair, timeL
               </div>
             </div>
             
-            {/* Status Text */}
             <div className="text-gray-300 text-sm font-semibold">
               <span className="text-cyan-300">Waiting for signal...</span>
             </div>

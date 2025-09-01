@@ -18,18 +18,16 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
   const [nextSignalTime, setNextSignalTime] = useState('');
   const [isButtonFading, setIsButtonFading] = useState(false);
 
-  // Функция для получения следующего времени сигнала
   const getNextSignalTime = () => {
     const now = new Date();
-    const moscowOffset = 3; // UTC+3 для Москвы
+    const moscowOffset = 3;
     const moscowTime = new Date(now.getTime() + (moscowOffset * 60 * 60 * 1000));
     
-    const signalTimes = [11, 16, 21]; // Часы сигналов
+    const signalTimes = [11, 16, 21];
     const currentHour = moscowTime.getUTCHours();
     const currentMinute = moscowTime.getUTCMinutes();
     const currentSecond = moscowTime.getUTCSeconds();
     
-    // Найти следующее время сигнала
     let nextHour = null;
     for (const hour of signalTimes) {
       if (hour > currentHour || (hour === currentHour && currentMinute === 0 && currentSecond === 0)) {
@@ -38,20 +36,17 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
       }
     }
     
-    // Если не найдено время сегодня, берем первое время завтра
     if (nextHour === null) {
       nextHour = signalTimes[0];
       moscowTime.setUTCDate(moscowTime.getUTCDate() + 1);
     }
     
-    // Установить время следующего сигнала
     const nextSignal = new Date(moscowTime);
     nextSignal.setUTCHours(nextHour, 0, 0, 0);
     
     return nextSignal;
   };
 
-  // Функция для расчета времени до следующего сигнала
   const calculateTimeLeft = () => {
     const now = new Date();
     const nextSignal = getNextSignalTime();
@@ -65,12 +60,10 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
       const totalSeconds = hours * 3600 + minutes * 60 + seconds;
       setTimeLeft(totalSeconds);
       
-      // Форматируем время следующего сигнала для отображения
       const signalHour = nextSignal.getUTCHours();
       setNextSignalTime(`${signalHour}:00`);
       
-      // Передаем данные таймера в родительский компонент
-      const maxTimeToSignal = 10 * 60 * 60; // Максимум 10 часов между сигналами
+      const maxTimeToSignal = 10 * 60 * 60;
       onTimerUpdate({ timeLeft: totalSeconds, maxTime: maxTimeToSignal });
       
       return totalSeconds;
@@ -79,18 +72,15 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
     return 0;
   };
 
-  // Инициализация таймера
   useEffect(() => {
     calculateTimeLeft();
   }, []);
 
   useEffect(() => {
-    // Milliseconds timer
     const msTimer = setInterval(() => {
       setMilliseconds(prev => (prev + 1) % 100);
     }, 10);
 
-    // Seconds timer
     const timer = setInterval(() => {
       const newTimeLeft = calculateTimeLeft();
       
@@ -99,16 +89,14 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
         setShowEntryPoint(true);
         onTimerEnd();
         
-        // Reset after showing entry point for 3 seconds
         setTimeout(() => {
           setShowEntryPoint(false);
           setIsAnalyzing(false);
           setIsAnalyzing(true);
-          calculateTimeLeft(); // Пересчитать для следующего сигнала
+          calculateTimeLeft();
         }, 3000);
       }
       
-      // Update waiting users count
       setWaitingUsers(prev => {
         const change = Math.floor((Math.random() - 0.5) * 50);
         const newCount = Math.max(100, Math.min(5000, prev + change));
@@ -145,8 +133,7 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
 
   const { hours, mins, secs } = formatTime(timeLeft);
   
-  // Для прогресса используем процент от общего времени до следующего сигнала
-  const maxTimeToSignal = 10 * 60 * 60; // Максимум 10 часов между сигналами
+  const maxTimeToSignal = 10 * 60 * 60;
   const progress = timeLeft > 0 ? ((maxTimeToSignal - timeLeft) / maxTimeToSignal) * 100 : 0;
 
   return (
@@ -158,7 +145,6 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
         </h3>
       </div>
       
-      {/* Wait Signal Button */}
       <div className="mb-3">
         <button
           onClick={handleWaitSignal}
@@ -179,14 +165,12 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
         </div>
       </div>
       
-      {/* Schedule */}
       <div className="bg-gradient-to-br from-purple-900/70 via-blue-900/70 to-cyan-900/70 backdrop-blur-sm rounded-t p-2 mb-0 border border-purple-400/50 border-b-0 shadow-inner">
         <div className="flex items-center gap-1 mb-1">
           <Calendar className="w-3 h-3 text-blue-400" />
           <span className="text-xs text-cyan-300 font-semibold">{t.signalSchedule}</span>
         </div>
         
-        {/* Moscow Time */}
         <div className="mb-2">
           <div className="text-center mb-1">
             <span className="text-xs text-white">{t.russia}</span>
@@ -204,7 +188,6 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
           </div>
         </div>
         
-        {/* Delhi Time */}
         <div>
           <div className="text-center mb-1">
             <span className="text-xs text-white">{t.kazakhstan}</span>
@@ -222,7 +205,6 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
           </div>
         </div>
         
-        {/* Brasilia Time */}
         <div className="mb-2">
           <div className="text-center mb-1">
             <span className="text-xs text-white">{t.uzbekistan}</span>
@@ -240,7 +222,6 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
           </div>
         </div>
         
-        {/* Accra Time */}
         <div>
           <div className="text-center mb-1">
             <span className="text-xs text-white">{t.kyrgyzstan}</span>
@@ -259,14 +240,11 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
         </div>
       </div>
       
-      {/* Timer section merged with schedule */}
       <div className="bg-gradient-to-br from-purple-900/70 via-blue-900/70 to-cyan-900/70 backdrop-blur-sm rounded-b p-2 border border-purple-400/50 border-t-0 shadow-inner">
-        {/* Digital Timer Display */}
         <div className="bg-gradient-to-br from-black/80 via-purple-900/40 to-blue-900/40 backdrop-blur-sm rounded p-2 mb-2 border border-purple-500/50 shadow-inner">
           <div className="flex items-center justify-center">
             {hours > 0 && (
               <>
-                {/* Hours */}
                 <div className="flex">
                   <div className="digital-digit">
                     {Math.floor(hours / 10)}
@@ -276,12 +254,10 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
                   </div>
                 </div>
                 
-                {/* Separator */}
                 <div className="digital-separator">:</div>
               </>
             )}
             
-            {/* Minutes */}
             <div className="flex">
               <div className="digital-digit">
                 {Math.floor(mins / 10)}
@@ -291,10 +267,8 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
               </div>
             </div>
             
-            {/* Separator */}
             <div className="digital-separator">:</div>
             
-            {/* Seconds */}
             <div className="flex">
               <div className="digital-digit">
                 {Math.floor(secs / 10)}
@@ -304,7 +278,6 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
               </div>
             </div>
             
-            {/* Milliseconds */}
             <div className="digital-separator">.</div>
             <div className="flex">
               <div className="digital-digit-small">
@@ -317,7 +290,6 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
           </div>
         </div>
         
-        {/* Status Messages */}
         <div className="min-h-[20px] flex items-center justify-center">
           {showEntryPoint ? (
             <div className="bg-gradient-to-r from-green-600/80 to-emerald-600/80 backdrop-blur-sm px-2 py-0.5 rounded border border-green-400/60 w-full shadow-lg shadow-green-500/30">

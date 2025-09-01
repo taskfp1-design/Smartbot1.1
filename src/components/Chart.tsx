@@ -47,7 +47,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
   });
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Calculate technical indicators
   const calculateIndicators = (candles: Candle[]): Indicator[] => {
     const indicators: Indicator[] = [];
     
@@ -57,15 +56,12 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
       const highs = currentCandles.map(c => c.high);
       const lows = currentCandles.map(c => c.low);
       
-      // Simple Moving Averages
       const sma20 = i >= 19 ? closes.slice(-20).reduce((a, b) => a + b) / 20 : closes[i];
       const sma50 = i >= 49 ? closes.slice(-50).reduce((a, b) => a + b) / 50 : closes[i];
       
-      // Exponential Moving Averages
       const ema12 = i === 0 ? closes[0] : (closes[i] * (2 / 13)) + (indicators[i - 1]?.ema12 || closes[0]) * (1 - (2 / 13));
       const ema26 = i === 0 ? closes[0] : (closes[i] * (2 / 27)) + (indicators[i - 1]?.ema26 || closes[0]) * (1 - (2 / 27));
       
-      // RSI calculation
       let rsi = 50;
       if (i >= 14) {
         const gains = [];
@@ -80,11 +76,9 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
         rsi = avgLoss === 0 ? 100 : 100 - (100 / (1 + (avgGain / avgLoss)));
       }
       
-      // MACD
       const macd = ema12 - ema26;
       const signal = i === 0 ? macd : (macd * (2 / 10)) + (indicators[i - 1]?.signal || macd) * (1 - (2 / 10));
       
-      // Bollinger Bands
       let bollinger = { upper: closes[i], middle: closes[i], lower: closes[i] };
       if (i >= 19) {
         const sma = sma20;
@@ -112,14 +106,13 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
     return indicators;
   };
 
-  // Initialize candles
   useEffect(() => {
     const initialCandles: Candle[] = [];
     let basePrice = 1.0850;
     const now = Date.now();
 
     for (let i = 0; i < 50; i++) {
-      const time = now - (50 - i) * 5000; // 5 second intervals
+      const time = now - (50 - i) * 5000;
       const open = basePrice;
       const volatility = 0.0005 + Math.random() * 0.0010;
       const direction = Math.random() > 0.5 ? 1 : -1;
@@ -139,7 +132,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
     setCurrentPrice(basePrice);
   }, [currencyPair]);
 
-  // Update candles in real-time
   useEffect(() => {
     if (!isPlaying) return;
 
@@ -148,7 +140,7 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
         const lastCandle = prev[prev.length - 1];
         const open = lastCandle.close;
         const volatility = 0.0005 + Math.random() * 0.0015;
-        const direction = Math.random() > 0.48 ? 1 : -1; // Slight bullish bias
+        const direction = Math.random() > 0.48 ? 1 : -1;
         const change = direction * volatility * (0.3 + Math.random() * 0.7);
         const close = open + change;
         
@@ -171,7 +163,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
         return newCandles;
       });
 
-      // Update waiting users count
       setWaitingUsers(prev => {
         const change = Math.floor((Math.random() - 0.5) * 50);
         const newCount = Math.max(100, Math.min(5000, prev + change));
@@ -188,7 +179,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
     setIsPlaying(!isPlaying);
   };
 
-  // Calculate chart dimensions and scaling
   const chartWidth = 900;
   const chartHeight = 400;
   const candleWidth = 14;
@@ -215,12 +205,9 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-xl shadow-2xl overflow-visible relative z-0">
-      {/* 3D Glow Effect Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-green-900/20 pointer-events-none z-0"></div>
       
-      {/* Header */}
       <div className="bg-black/80 backdrop-blur-sm px-4 sm:px-6 py-3 sm:py-4 border-b border-cyan-500/30 relative z-1">
-        {/* Indicator Controls */}
         <div className="flex flex-wrap gap-2 justify-center mb-2">
           <button
             onClick={() => setShowIndicators(prev => ({ ...prev, sma: !prev.sma }))}
@@ -275,9 +262,7 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
         </div>
       </div>
 
-      {/* 3D Chart Container */}
       <div className="relative bg-black/90 p-4 overflow-hidden z-1" style={{ perspective: '1000px' }}>
-        {/* 3D Chart Surface */}
         <div 
           className="relative transform-gpu transition-transform duration-1000 z-1"
           style={{ 
@@ -292,7 +277,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
             className="overflow-visible filter drop-shadow-2xl"
             style={{ filter: 'drop-shadow(0 0 20px rgba(0, 255, 255, 0.3))' }}
           >
-            {/* 3D Grid with Neon Effect */}
             <defs>
               <pattern id="neonGrid" width="50" height="40" patternUnits="userSpaceOnUse">
                 <path 
@@ -322,7 +306,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
                 <stop offset="100%" stopColor="#ff4444"/>
               </linearGradient>
 
-              {/* Glow Filters */}
               <filter id="greenGlow">
                 <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                 <feMerge> 
@@ -348,10 +331,8 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
               </filter>
             </defs>
 
-            {/* 3D Grid Background */}
             <rect width="100%" height="100%" fill="url(#neonGrid)" opacity="0.3" />
 
-            {/* Price Level Lines with Neon Effect */}
             {[0.2, 0.4, 0.6, 0.8].map((ratio, i) => {
               const y = chartHeight * ratio;
               const price = maxPrice - (priceRange * ratio);
@@ -383,7 +364,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
               );
             })}
 
-            {/* Current Price Line with Pulsing Effect */}
             <line 
               x1="0" 
               y1={currentPriceY} 
@@ -409,7 +389,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
               {currentPrice.toFixed(5)}
             </text>
 
-            {/* 3D Candlesticks with Neon Glow */}
             {visibleCandles.map((candle, i) => {
               const x = i * (candleWidth + candleSpacing) + candleWidth / 2;
               const isGreen = candle.close > candle.open;
@@ -421,7 +400,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
 
               return (
                 <g key={candle.time} className="transform-gpu">
-                  {/* 3D Shadow Effect */}
                   <g transform="translate(2, 2)" opacity="0.3">
                     <line
                       x1={x}
@@ -440,7 +418,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
                     />
                   </g>
 
-                  {/* Main Wick with Glow */}
                   <line
                     x1={x}
                     y1={wickTop}
@@ -452,7 +429,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
                     opacity="0.9"
                   />
                   
-                  {/* 3D Candle Body */}
                   <rect
                     x={x - candleWidth / 2}
                     y={bodyTop}
@@ -466,14 +442,12 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
                     className="transition-all duration-300"
                   />
 
-                  {/* 3D Top Face */}
                   <polygon
                     points={`${x - candleWidth / 2},${bodyTop} ${x - candleWidth / 2 + 3},${bodyTop - 3} ${x + candleWidth / 2 + 3},${bodyTop - 3} ${x + candleWidth / 2},${bodyTop}`}
                     fill={isGreen ? "#66ffaa" : "#ff6666"}
                     opacity="0.8"
                   />
 
-                  {/* 3D Right Face */}
                   <polygon
                     points={`${x + candleWidth / 2},${bodyTop} ${x + candleWidth / 2 + 3},${bodyTop - 3} ${x + candleWidth / 2 + 3},${bodyBottom - 3} ${x + candleWidth / 2},${bodyBottom}`}
                     fill={isGreen ? "#44dd88" : "#dd4444"}
@@ -483,7 +457,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
               );
             })}
 
-            {/* Technical Indicators with Neon Effects */}
             {showIndicators.sma && visibleIndicators.length > 0 && (
               <g>
                 <path
@@ -538,7 +511,6 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
 
       </div>
 
-      {/* Enhanced Stats Bar */}
       <div className="bg-black/90 backdrop-blur-sm px-4 sm:px-6 py-3 border-t border-cyan-500/30 relative z-1">
         <div className="flex justify-between items-center text-xs">
           <div className="text-cyan-400 font-mono">

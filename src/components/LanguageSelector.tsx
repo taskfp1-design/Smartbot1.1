@@ -4,19 +4,16 @@ import { languages } from '../i18n/translations';
 import { useLanguage } from '../hooks/useLanguage';
 
 export const LanguageSelector: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { currentLanguage, changeLanguage } = useLanguage();
+  const { currentLanguage } = useLanguage();
 
   const currentLang = languages.find(lang => lang.code === currentLanguage) || languages[0];
 
   const handleLanguageSelect = (languageCode: string) => {
-    changeLanguage(languageCode);
-    setIsOpen(false);
+    console.log('Language selected:', languageCode);
   };
 
   return (
     <div className="w-full">
-      {/* Horizontal language buttons */}
       <div className="flex flex-wrap gap-2 justify-center items-center">
         <div className="flex items-center gap-2 mr-4">
           <Globe className="w-5 h-5 text-cyan-400" />

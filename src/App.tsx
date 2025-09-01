@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useLanguage } from './hooks/useLanguage';
-import { LanguageSelector } from './components/LanguageSelector';
 import { Timer } from './components/Timer';
-import { CurrencySelector } from './components/CurrencySelector';
 import { Chart } from './components/Chart';
 import StrategyAnalysis from './components/StrategyAnalysis';
 import { TrendingUp, BarChart, Clock, Flame } from 'lucide-react';
@@ -49,7 +47,6 @@ function App() {
     // Trigger express signal for strategy analysis only
     setTriggerExpressSignal(prev => prev + 1);
     
-    // Убираем рекомендацию через 30 секунд
     setTimeout(() => {
       setHasRecommendation(false);
       setRecommendedPair('');
@@ -60,82 +57,70 @@ function App() {
     if (canUseExpressSignal) {
       handleGetRecommendation();
       
-      // Set 15-minute cooldown for express signal
       const now = Date.now();
       setLastExpressSignalTime(now);
       setCanUseExpressSignal(false);
-      setExpressSignalTimeLeft(15 * 60); // 15 minutes in seconds
+      setExpressSignalTimeLeft(15 * 60);
       
-      // Reset after 15 minutes
       setTimeout(() => {
         setCanUseExpressSignal(true);
         setLastExpressSignalTime(null);
         setExpressSignalTimeLeft(0);
-      }, 15 * 60 * 1000); // 15 minutes
+      }, 15 * 60 * 1000);
     }
   }, [canUseExpressSignal, handleGetRecommendation]);
 
   const handleGetHourlySignal = useCallback(() => {
     if (canUseHourlySignal) {
-      // Generate signal when hourly button is clicked
       setTriggerExpressSignal(prev => prev + 1);
       
-      // Set 1-hour cooldown for hourly signal
       const now = Date.now();
       setLastHourlySignalTime(now);
       setCanUseHourlySignal(false);
-      setHourlySignalTimeLeft(60 * 60); // 1 hour in seconds
+      setHourlySignalTimeLeft(60 * 60);
       
-      // Reset after 1 hour
       setTimeout(() => {
         setCanUseHourlySignal(true);
         setLastHourlySignalTime(null);
         setHourlySignalTimeLeft(0);
-      }, 60 * 60 * 1000); // 1 hour
+      }, 60 * 60 * 1000);
     }
   }, [canUseHourlySignal]);
 
   const handleGetFiveHourSignal = useCallback(() => {
     if (canUseFiveHourSignal) {
-      // Generate signal when 5-hour button is clicked
       setTriggerExpressSignal(prev => prev + 1);
       
-      // Set 5-hour cooldown for 5-hour signal
       const now = Date.now();
       setLastFiveHourSignalTime(now);
       setCanUseFiveHourSignal(false);
-      setFiveHourSignalTimeLeft(5 * 60 * 60); // 5 hours in seconds
+      setFiveHourSignalTimeLeft(5 * 60 * 60);
       
-      // Reset after 5 hours
       setTimeout(() => {
         setCanUseFiveHourSignal(true);
         setLastFiveHourSignalTime(null);
         setFiveHourSignalTimeLeft(0);
-      }, 5 * 60 * 60 * 1000); // 5 hours
+      }, 5 * 60 * 60 * 1000);
     }
   }, [canUseFiveHourSignal]);
 
   const handleGetTwentyFourHourSignal = useCallback(() => {
     if (canUseTwentyFourHourSignal) {
-      // Generate signal when 24-hour button is clicked
       setTriggerExpressSignal(prev => prev + 1);
       
-      // Set 24-hour cooldown for 24-hour signal
       const now = Date.now();
       setLastTwentyFourHourSignalTime(now);
       setCanUseTwentyFourHourSignal(false);
-      setTwentyFourHourSignalTimeLeft(24 * 60 * 60); // 24 hours in seconds
+      setTwentyFourHourSignalTimeLeft(24 * 60 * 60);
       
-      // Reset after 24 hours
       setTimeout(() => {
         setCanUseTwentyFourHourSignal(true);
         setLastTwentyFourHourSignalTime(null);
         setTwentyFourHourSignalTimeLeft(0);
-      }, 24 * 60 * 60 * 1000); // 24 hours
+      }, 24 * 60 * 60 * 1000);
     }
   }, [canUseTwentyFourHourSignal]);
 
-  // Check if 15 minutes have passed since last express signal
   useEffect(() => {
     if (lastExpressSignalTime) {
       const now = Date.now();
@@ -149,7 +134,6 @@ function App() {
     }
   }, [lastExpressSignalTime]);
 
-  // Countdown timer for express signal
   useEffect(() => {
     if (expressSignalTimeLeft > 0) {
       const timer = setInterval(() => {
@@ -165,7 +149,6 @@ function App() {
     }
   }, [expressSignalTimeLeft]);
 
-  // Countdown timer for hourly signal
   useEffect(() => {
     if (hourlySignalTimeLeft > 0) {
       const timer = setInterval(() => {
@@ -181,7 +164,6 @@ function App() {
     }
   }, [hourlySignalTimeLeft]);
 
-  // Countdown timer for 5-hour signal
   useEffect(() => {
     if (fiveHourSignalTimeLeft > 0) {
       const timer = setInterval(() => {
@@ -197,7 +179,6 @@ function App() {
     }
   }, [fiveHourSignalTimeLeft]);
 
-  // Countdown timer for 24-hour signal
   useEffect(() => {
     if (twentyFourHourSignalTimeLeft > 0) {
       const timer = setInterval(() => {
@@ -213,7 +194,6 @@ function App() {
     }
   }, [twentyFourHourSignalTimeLeft]);
 
-  // Format time for display (HH:MM:SS)
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -221,21 +201,19 @@ function App() {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Blinking animation for personal signal button every 2 seconds
   useEffect(() => {
     const blinkInterval = setInterval(() => {
       if (canUseExpressSignal) {
         setIsPersonalSignalBlinking(true);
-        setTimeout(() => setIsPersonalSignalBlinking(false), 500); // Blink for 0.5 seconds
+        setTimeout(() => setIsPersonalSignalBlinking(false), 500);
       }
-    }, 2000); // Every 2 seconds
+    }, 2000);
 
     return () => clearInterval(blinkInterval);
   }, [canUseExpressSignal]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black">
-      {/* Header */}
       <header className="bg-black/50 backdrop-blur-sm border-b border-blue-500/20">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
@@ -254,7 +232,6 @@ function App() {
         </div>
       </header>
 
-      {/* Signal Alert */}
       {signalGenerated && (
         <div className="fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
           <div className="flex items-center gap-2">
@@ -264,11 +241,8 @@ function App() {
         </div>
       )}
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Единый большой контейнер */}
         <div className="bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-sm rounded-xl shadow-2xl overflow-visible border border-purple-500/30 relative z-0">
-          {/* График - полная ширина сверху */}
           <div className="w-full relative z-1">
             <Chart 
               currencyPair={selectedPair} 
@@ -277,14 +251,11 @@ function App() {
             />
           </div>
 
-          {/* Три блока в ряд */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 p-3 relative z-1">
-            {/* Таймер */}
             <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
               <Timer onTimerEnd={handleTimerEnd} onTimerUpdate={setTimerData} />
             </div>
 
-            {/* Сигнал */}
             <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
               <StrategyAnalysis 
                 currencyPair={selectedPair} 
@@ -294,7 +265,6 @@ function App() {
               />
             </div>
 
-            {/* Сервисы */}
             <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
               <div className="text-center">
                 <button
@@ -307,7 +277,6 @@ function App() {
                   } ${
                     isPersonalSignalBlinking && canUseExpressSignal ? 'animate-pulse shadow-lg shadow-blue-500/50' : ''
                   }`}
-                  style={{ fontFamily: '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                 >
                   {!canUseExpressSignal && expressSignalTimeLeft > 0 ? (
                     <div className="flex items-center justify-center gap-2 py-1">
@@ -323,7 +292,6 @@ function App() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-center gap-3 py-1">
-                      {/* Fire animation */}
                       <div className="fire-animation">
                         🔥
                       </div>
@@ -343,7 +311,6 @@ function App() {
                 </button>
                 
                <button className="w-full mt-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-white hover:from-blue-600 hover:to-gray-100 text-blue-900 rounded-lg font-bold transition-all duration-200 text-xs shadow-lg hover:shadow-xl transform hover:scale-105"
-                        style={{ fontFamily: '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                         onClick={handleGetHourlySignal}
                         disabled={!canUseHourlySignal}>
                   {!canUseHourlySignal && hourlySignalTimeLeft > 0 ? (
@@ -371,7 +338,6 @@ function App() {
                 </button>
                 
                <button className="w-full mt-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-white hover:from-blue-600 hover:to-gray-100 text-blue-900 rounded-lg font-bold transition-all duration-200 text-sm shadow-lg hover:shadow-xl transform hover:scale-105"
-                        style={{ fontFamily: '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                         onClick={handleGetFiveHourSignal}
                         disabled={!canUseFiveHourSignal}>
                   {!canUseFiveHourSignal && fiveHourSignalTimeLeft > 0 ? (
@@ -399,7 +365,6 @@ function App() {
                 </button>
                 
                <button className="w-full mt-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-white hover:from-blue-600 hover:to-gray-100 text-blue-900 rounded-lg font-bold transition-all duration-200 text-xs shadow-lg hover:shadow-xl transform hover:scale-105"
-                        style={{ fontFamily: '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                         onClick={handleGetTwentyFourHourSignal}
                         disabled={!canUseTwentyFourHourSignal}>
                   {!canUseTwentyFourHourSignal && twentyFourHourSignalTimeLeft > 0 ? (
@@ -429,13 +394,11 @@ function App() {
             </div>
           </div>
 
-          {/* Разделитель */}
           <div className="border-t border-gray-700"></div>
 
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="bg-black/50 backdrop-blur-sm border-t border-blue-500/20 mt-12">
         <div className="max-w-7xl mx-auto px-4 py-6 text-center text-gray-400">
           <p>{t.footerCopyright}</p>
@@ -445,7 +408,6 @@ function App() {
         </div>
       </footer>
       
-      {/* Fire animation styles */}
       <style jsx>{`
         .fire-animation {
           font-size: 36px;
