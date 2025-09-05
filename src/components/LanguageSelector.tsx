@@ -4,12 +4,12 @@ import { languages } from '../i18n/translations';
 import { useLanguage } from '../hooks/useLanguage';
 
 export const LanguageSelector: React.FC = () => {
-  const { currentLanguage } = useLanguage();
+  const { currentLanguage, setLanguage } = useLanguage();
 
   const currentLang = languages.find(lang => lang.code === currentLanguage) || languages[0];
 
   const handleLanguageSelect = (languageCode: string) => {
-    console.log('Language selected:', languageCode);
+    setLanguage(languageCode);
   };
 
   return (
