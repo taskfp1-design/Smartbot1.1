@@ -7,6 +7,10 @@ import { TrendingUp, BarChart, Clock, Flame } from 'lucide-react';
 
 function App() {
   const { t } = useLanguage();
+  
+  // Error boundary state
+  const [hasError, setHasError] = useState(false);
+  
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [signalGenerated, setSignalGenerated] = useState(false);
   const [hasRecommendation, setHasRecommendation] = useState(false);
@@ -26,6 +30,44 @@ function App() {
   const [canUseTwentyFourHourSignal, setCanUseTwentyFourHourSignal] = useState(true);
   const [twentyFourHourSignalTimeLeft, setTwentyFourHourSignalTimeLeft] = useState(0);
   const [lastTwentyFourHourSignalTime, setLastTwentyFourHourSignalTime] = useState<number | null>(null);
+
+  // Error handling
+  useEffect(() => {
+    const handleError = (error: ErrorEvent) => {
+      console.error('Global error:', error);
+      setHasError(true);
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      setHasError(true);
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black flex items-center justify-center">
+        <div className="bg-red-900/50 border border-red-500 rounded-lg p-8 max-w-md text-center">
+          <h2 className="text-white text-xl font-bold mb-4">Application Error</h2>
+          <p className="text-red-200 mb-4">Something went wrong. Please refresh the page.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleTimerEnd = useCallback(() => {
     setSignalGenerated(true);
