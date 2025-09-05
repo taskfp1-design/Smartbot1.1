@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLanguage } from '../hooks/useLanguage';
 import { Play, Pause, Users } from 'lucide-react';
+
+// Simple translations to avoid hook issues
+const translations = {
+  volume: "Volume:"
+};
 
 interface ChartProps {
   currencyPair: string;
@@ -32,7 +36,6 @@ interface Indicator {
 }
 
 export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
-  const { t } = useLanguage();
   const [candles, setCandles] = useState<Candle[]>([]);
   const [indicators, setIndicators] = useState<Indicator[]>([]);
   const [currentPrice, setCurrentPrice] = useState(1.0850);
@@ -514,7 +517,7 @@ export const Chart: React.FC<ChartProps> = ({ currencyPair, onPairChange }) => {
       <div className="bg-black/90 backdrop-blur-sm px-4 sm:px-6 py-3 border-t border-cyan-500/30 relative z-1">
         <div className="flex justify-between items-center text-xs">
           <div className="text-cyan-400 font-mono">
-            {t.volume} <span className="text-white font-bold">{Math.round(visibleCandles[visibleCandles.length - 1]?.volume || 0).toLocaleString()}</span>
+            {translations.volume} <span className="text-white font-bold">{Math.round(visibleCandles[visibleCandles.length - 1]?.volume || 0).toLocaleString()}</span>
           </div>
           {visibleIndicators.length > 0 && (
             <div className="flex gap-6 text-xs font-mono">

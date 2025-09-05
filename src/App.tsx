@@ -1,13 +1,25 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useLanguage } from './hooks/useLanguage';
-import { Timer } from './components/Timer';
-import { Chart } from './components/Chart';
-import StrategyAnalysis from './components/StrategyAnalysis';
 import { TrendingUp, BarChart, Clock, Flame } from 'lucide-react';
 
+// Lazy load components to avoid circular dependencies
+const Timer = React.lazy(() => import('./components/Timer').then(module => ({ default: module.Timer })));
+const Chart = React.lazy(() => import('./components/Chart').then(module => ({ default: module.Chart })));
+const StrategyAnalysis = React.lazy(() => import('./components/StrategyAnalysis'));
+
+// Simple translations to avoid hook issues
+const translations = {
+  appTitle: "Smart Trading Bot - Binary Options",
+  appSubtitle: "Professional currency pair analytics",
+  tradingSignal: "🎯 TRADING SIGNAL",
+  nextSignalAfter: "Next signal in",
+  getExpressSignal: "Get express signal",
+  immediately: "immediately",
+  getEducationalMaterials: "Get signal based on 1 hour market analysis",
+  footerCopyright: "© 2025 Binary Options Analytics. All rights reserved.",
+  footerWarning: "Binary options trading carries high risk of capital loss"
+};
+
 function App() {
-  const { t } = useLanguage();
-  
   // Error boundary state
   const [hasError, setHasError] = useState(false);
   
@@ -264,8 +276,8 @@ function App() {
                 <TrendingUp className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">{t.appTitle}</h1>
-                <p className="text-blue-200">{t.appSubtitle}</p>
+                <h1 className="text-2xl font-bold text-white">{translations.appTitle}</h1>
+                <p className="text-blue-200">{translations.appSubtitle}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -278,34 +290,52 @@ function App() {
         <div className="fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
           <div className="flex items-center gap-2">
             <BarChart className="w-5 h-5" />
-            <span className="font-semibold">{t.tradingSignal}</span>
+            <span className="font-semibold">{translations.tradingSignal}</span>
           </div>
         </div>
       )}
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-sm rounded-xl shadow-2xl overflow-visible border border-purple-500/30 relative z-0">
-          <div className="w-full relative z-1">
-            <Chart 
-              currencyPair={selectedPair} 
-              onPairChange={setSelectedPair}
-              key={`${selectedPair}-${triggerExpressSignal}`}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 p-3 relative z-1">
-            <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
-              <Timer onTimerEnd={handleTimerEnd} onTimerUpdate={setTimerData} />
+          <React.Suspense fallback={
+            <div className="w-full h-96 flex items-center justify-center">
+              <div className="text-white">Loading chart...</div>
             </div>
-
-            <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
-              <StrategyAnalysis 
+          }>
+            <div className="w-full relative z-1">
+              <Chart 
                 currencyPair={selectedPair} 
-                timeLeft={timerData.timeLeft}
-                maxTime={timerData.maxTime}
-                expressSignalTrigger={triggerExpressSignal}
+                onPairChange={setSelectedPair}
+                key={`${selectedPair}-${triggerExpressSignal}`}
               />
             </div>
+          </React.Suspense>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 p-3 relative z-1">
+            <React.Suspense fallback={
+              <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
+                <div className="text-white text-center">Loading timer...</div>
+              </div>
+            }>
+              <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
+                <Timer onTimerEnd={handleTimerEnd} onTimerUpdate={setTimerData} />
+              </div>
+            </React.Suspense>
+
+            <React.Suspense fallback={
+              <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
+                <div className="text-white text-center">Loading analysis...</div>
+              </div>
+            }>
+              <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
+                <StrategyAnalysis 
+                  currencyPair={selectedPair} 
+                  timeLeft={timerData.timeLeft}
+                  maxTime={timerData.maxTime}
+                  expressSignalTrigger={triggerExpressSignal}
+                />
+              </div>
+            </React.Suspense>
 
             <div className="bg-gradient-to-br from-purple-800/60 via-blue-800/60 to-cyan-800/60 backdrop-blur-sm rounded-lg p-3 border border-purple-400/40 shadow-lg shadow-purple-500/20 relative z-1">
               <div className="text-center">
@@ -325,7 +355,7 @@ function App() {
                       <Clock className="w-4 h-4" />
                       <div className="text-center">
                         <div className="font-black text-xs tracking-wider uppercase">
-                          {t.nextSignalAfter}
+                          {translations.nextSignalAfter}
                         </div>
                         <div className="font-mono text-sm font-bold">
                           {formatTime(expressSignalTimeLeft)}
@@ -339,10 +369,10 @@ function App() {
                       </div>
                       <div className="text-center">
                         <div className="font-black text-sm tracking-wider uppercase text-shadow">
-                          {t.getExpressSignal}
+                          {translations.getExpressSignal}
                         </div>
                         <div className="text-xs opacity-95 font-semibold tracking-wide">
-                          {t.immediately}
+                          {translations.immediately}
                         </div>
                       </div>
                       <div className="fire-animation">
@@ -360,7 +390,7 @@ function App() {
                       <Clock className="w-4 h-4" />
                       <div className="text-center">
                         <div className="font-black text-xs tracking-wider uppercase">
-                          {t.nextSignalAfter}
+                          {translations.nextSignalAfter}
                         </div>
                         <div className="font-mono text-sm font-bold">
                           {formatTime(hourlySignalTimeLeft)}
@@ -372,7 +402,7 @@ function App() {
                       <span>📚</span>
                       <div className="text-center py-1">
                         <div className="font-black text-sm tracking-wider uppercase text-shadow">
-                          {t.getEducationalMaterials}
+                          {translations.getEducationalMaterials}
                         </div>
                       </div>
                     </div>
@@ -387,7 +417,7 @@ function App() {
                       <Clock className="w-4 h-4" />
                       <div className="text-center">
                         <div className="font-black text-xs tracking-wider uppercase">
-                          {t.nextSignalAfter}
+                          {translations.nextSignalAfter}
                         </div>
                         <div className="font-mono text-sm font-bold">
                           {formatTime(fiveHourSignalTimeLeft)}
@@ -414,7 +444,7 @@ function App() {
                       <Clock className="w-4 h-4" />
                       <div className="text-center">
                         <div className="font-black text-xs tracking-wider uppercase">
-                          {t.nextSignalAfter}
+                          {translations.nextSignalAfter}
                         </div>
                         <div className="font-mono text-sm font-bold">
                           {formatTime(twentyFourHourSignalTimeLeft)}
@@ -443,9 +473,9 @@ function App() {
 
       <footer className="bg-black/50 backdrop-blur-sm border-t border-blue-500/20 mt-12">
         <div className="max-w-7xl mx-auto px-4 py-6 text-center text-gray-400">
-          <p>{t.footerCopyright}</p>
+          <p>{translations.footerCopyright}</p>
           <p className="text-sm mt-1">
-            {t.footerWarning}
+            {translations.footerWarning}
           </p>
         </div>
       </footer>

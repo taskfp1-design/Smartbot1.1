@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useLanguage } from '../hooks/useLanguage';
 import { Clock, Target, Users, Calendar } from 'lucide-react';
+
+// Simple translations to avoid hook issues
+const translations = {
+  nextSignal: "Next signal:",
+  waitSignal: "Wait for signal",
+  waitingSignal: "Waiting for signal ✓",
+  signalSchedule: "Signal schedule",
+  russia: "🇷🇺 Russia (UTC+3)",
+  kazakhstan: "🇰🇿 Kazakhstan (UTC+6)",
+  uzbekistan: "🇧🇷 Brasilia (UTC-3)",
+  kyrgyzstan: "🇬🇭 Accra (UTC+0)",
+  entryPoint: "Entry point"
+};
 
 interface TimerProps {
   onTimerEnd: () => void;
@@ -8,7 +20,6 @@ interface TimerProps {
 }
 
 export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
-  const { t } = useLanguage();
   const [timeLeft, setTimeLeft] = useState(0);
   const [milliseconds, setMilliseconds] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
@@ -141,7 +152,7 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
       <div className="flex items-center justify-center mb-3">
         <h3 className="text-sm font-bold text-white flex items-center gap-1">
           <Clock className="w-5 h-5 text-blue-400" />
-          {t.nextSignal} {nextSignalTime}
+          {translations.nextSignal} {nextSignalTime}
         </h3>
       </div>
       
@@ -156,7 +167,7 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
               : 'bg-gradient-to-r from-blue-500 to-white hover:from-blue-600 hover:to-gray-100 text-blue-900'
           }`}
         >
-          {isWaitingSignal ? t.waitingSignal : t.waitSignal}
+          {isWaitingSignal ? translations.waitingSignal : translations.waitSignal}
         </button>
         
         <div className="flex items-center justify-center gap-1 mt-1">
@@ -168,12 +179,12 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
       <div className="bg-gradient-to-br from-purple-900/70 via-blue-900/70 to-cyan-900/70 backdrop-blur-sm rounded-t p-2 mb-0 border border-purple-400/50 border-b-0 shadow-inner">
         <div className="flex items-center gap-1 mb-1">
           <Calendar className="w-3 h-3 text-blue-400" />
-          <span className="text-xs text-cyan-300 font-semibold">{t.signalSchedule}</span>
+          <span className="text-xs text-cyan-300 font-semibold">{translations.signalSchedule}</span>
         </div>
         
         <div className="mb-2">
           <div className="text-center mb-1">
-            <span className="text-xs text-white">{t.russia}</span>
+            <span className="text-xs text-white">{translations.russia}</span>
           </div>
           <div className="grid grid-cols-3 gap-1 text-center mb-1">
             <div className={`rounded px-1 py-0.5 ${nextSignalTime === '11:00' ? 'bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg shadow-purple-500/50' : 'bg-gradient-to-r from-gray-800/80 to-gray-700/80'}`}>
@@ -190,7 +201,7 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
         
         <div>
           <div className="text-center mb-1">
-            <span className="text-xs text-white">{t.kazakhstan}</span>
+            <span className="text-xs text-white">{translations.kazakhstan}</span>
           </div>
           <div className="grid grid-cols-3 gap-1 text-center">
             <div className={`rounded px-1 py-0.5 ${nextSignalTime === '11:00' ? 'bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg shadow-purple-500/50' : 'bg-gradient-to-r from-gray-800/80 to-gray-700/80'}`}>
@@ -207,7 +218,7 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
         
         <div className="mb-2">
           <div className="text-center mb-1">
-            <span className="text-xs text-white">{t.uzbekistan}</span>
+            <span className="text-xs text-white">{translations.uzbekistan}</span>
           </div>
           <div className="grid grid-cols-3 gap-1 text-center">
             <div className={`rounded px-1 py-0.5 ${nextSignalTime === '11:00' ? 'bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg shadow-purple-500/50' : 'bg-gradient-to-r from-gray-800/80 to-gray-700/80'}`}>
@@ -224,7 +235,7 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
         
         <div>
           <div className="text-center mb-1">
-            <span className="text-xs text-white">{t.kyrgyzstan}</span>
+            <span className="text-xs text-white">{translations.kyrgyzstan}</span>
           </div>
           <div className="grid grid-cols-3 gap-1 text-center">
             <div className={`rounded px-1 py-0.5 ${nextSignalTime === '11:00' ? 'bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg shadow-purple-500/50' : 'bg-gradient-to-r from-gray-800/80 to-gray-700/80'}`}>
@@ -295,7 +306,7 @@ export const Timer: React.FC<TimerProps> = ({ onTimerEnd, onTimerUpdate }) => {
             <div className="bg-gradient-to-r from-green-600/80 to-emerald-600/80 backdrop-blur-sm px-2 py-0.5 rounded border border-green-400/60 w-full shadow-lg shadow-green-500/30">
               <div className="flex items-center justify-center gap-2 text-white">
                 <Target className="w-3 h-3 animate-pulse" />
-                <span className="text-xs font-bold text-center">{t.entryPoint}</span>
+                <span className="text-xs font-bold text-center">{translations.entryPoint}</span>
               </div>
             </div>
           ) : null}
