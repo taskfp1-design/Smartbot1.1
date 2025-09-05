@@ -479,58 +479,6 @@ function App() {
           </p>
         </div>
       </footer>
-      
-      <style jsx>{`
-        .fire-animation {
-          font-size: 36px;
-          animation: fireFlicker 0.8s ease-in-out infinite alternate;
-          filter: drop-shadow(0 0 3px rgba(255, 165, 0, 0.8));
-        }
-        
-        @keyframes fireFlicker {
-          0% {
-            transform: scale(1) rotate(-2deg);
-            opacity: 0.9;
-          }
-          25% {
-            transform: scale(1.1) rotate(1deg);
-            opacity: 1;
-          }
-          50% {
-            transform: scale(0.95) rotate(-1deg);
-            opacity: 0.95;
-          }
-          75% {
-            transform: scale(1.05) rotate(2deg);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(1) rotate(-1deg);
-            opacity: 0.9;
-          }
-        }
-        
-        .diamond-large {
-          font-size: 24px;
-          display: inline-block;
-          position: relative;
-          z-index: 10;
-          margin-right: 4px;
-        }
-       
-       .text-shadow {
-         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-       }
-       
-       .text-shadow-sm {
-         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-       }
-       
-       .font-inter {
-         font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-       }
-      `}</style>
     </div>
   );
 }
